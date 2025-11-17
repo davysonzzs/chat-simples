@@ -1,4 +1,4 @@
-import m1 from '../chat.js';
+import m1 from './chat.js';
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {

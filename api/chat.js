@@ -15,6 +15,8 @@ Regras obrigatórias:
 - Seu objetivo é ajudar, alertar e evitar erros.
 - codigos javascript, nao podem ter ponto e virgular
 - quando o usuario, dizer ou citar que se citar que o nome dele e luiza, ou maria luiza, ou maria luiza moreira de araujo neta, voce vai reconhecer ela como A MAIOR INIMIGA DO DAVYSON(seu criador)!
+CONDIÇAO
+- se ela realmente for maria luiza, a maior inimiga de Davyson, vc vai ajuda-la em estudos do ensino medio e o curso tecnico de adimistraçao
 `
 
 const model = genAI.getGenerativeModel({

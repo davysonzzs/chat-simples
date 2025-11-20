@@ -1,3 +1,4 @@
+// A MAIORIA DO CODIGO DO FRONT, FOI FEITO PELA A PROPRIA IA 
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -5,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Simples</title>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
@@ -71,7 +73,7 @@
             align-items: center;
         }
 
-        #ler {
+        #messageInput {
             flex-grow: 1;
             padding: 12px 18px;
             border: 1px solid #ccc;
@@ -85,9 +87,10 @@
             min-height: 20px;
             max-height: 100px;
             overflow-y: auto;
+            box-sizing: border-box;
         }
 
-        #ler:focus {
+        #messageInput:focus {
             border-color: #4CAF50;
             box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
         }
@@ -128,7 +131,7 @@
                 padding: 15px;
             }
 
-            #ler {
+            #messageInput {
                 margin-right: 10px;
                 padding: 10px 15px;
             }
@@ -145,18 +148,22 @@
         <div id="chat"></div>
 
         <div class="input-area">
-            <input type="text" placeholder="digite sua mensagem..." id="ler">
+            <textarea id="messageInput" placeholder="digite sua mensagem..."></textarea>
             <button onclick="enviar()">Enviar</button>
         </div>
     </div>
 
     <script>
-        async function enviar() {
-            const texto = document.getElementById('ler').value.trim()
-            if (!texto) return
+        const chatDiv = document.getElementById('chat');
+        const messageInput = document.getElementById('messageInput');
 
-            addmsg(texto, 'chat')
-            document.getElementById('ler').value = ""
+        async function enviar() {
+            const texto = messageInput.value.trim();
+            if (!texto) return;
+
+            addmsg(texto, 'chat');
+            messageInput.value = "";
+            messageInput.focus();
 
             try {
                 const resposta = await fetch("https://chat-simples-gray.vercel.app/api/perguntar", {
@@ -169,32 +176,38 @@
                     })
                 }).then(r => {
                     if (!r.ok) {
-                        throw new Error(`Erro HTTP! status: ${r.status}`)
+                        throw new Error(`Erro HTTP! status: ${r.status}`);
                     }
-                    return r.json()
-                })
+                    return r.json();
+                });
 
-                addmsg(resposta.resposta, 'bot')
+                addmsg(resposta.resposta, 'bot');
+
             } catch (error) {
-                console.error("Erro ao enviar mensagem:", error)
-                addmsg("Desculpe, não consegui obter uma resposta. Tente novamente mais tarde.", 'bot')
+                console.error("Erro ao enviar mensagem:", error);
+                addmsg("Desculpe, não consegui obter uma resposta. Tente novamente mais tarde.", 'bot');
             }
         }
 
-        const buta = document.getElementById('ler')
-        buta.addEventListener('keydown', (event) =>{
-            if(event.key == "Enter"){
-                enviar()
+        messageInput.addEventListener('keydown', (event) => {
+            if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+                enviar();
             }
-        })
+        });
 
         function addmsg(msg, tipo) {
-            const chatDiv = document.getElementById('chat')
-            const div = document.createElement('div')
-            div.className = "msg " + tipo
-            div.innerText = msg
-            chatDiv.appendChild(div)
-            chatDiv.scrollTop = chatDiv.scrollHeight
+            const div = document.createElement('div');
+            div.className = "msg " + tipo;
+
+            if (tipo === 'bot') {
+                div.innerHTML = DOMPurify.sanitize(msg);
+            } else {
+                div.innerText = msg;
+            }
+
+            chatDiv.appendChild(div);
+            chatDiv.scrollTop = chatDiv.scrollHeight;
         }
     </script>
 </body>
